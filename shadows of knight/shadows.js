@@ -30,9 +30,38 @@ while (true) {
 	//determineXJump(bombDir);
 	//determineYJump(bombDir);
 	// the location of the next window Batman should jump to.
+	// printErr('initial max x: ', moveGridX.max, W)
 	print(determineXJump(bombDir) + ' ' + determineYJump(bombDir));
 }
 //-------------------------------------------------------
+
+function determineXJump(bombDir) {
+	printErr('batman: ' ,X0, Y0);
+	printErr('bomb is ', bombDir);
+	printErr('gridX min: ' + moveGridX.min + '  max ' + moveGridX.max)
+	switch (bombDir) {
+		case 'R':
+		case 'UR':
+		case 'DR':
+			moveGridX.min = X0;  
+			printErr('bomb right', );
+			//printErr(moveGridX.max, X0)
+			//printErr('going right: ' + Math.ceil((moveGridX.max - X0)/2))
+			X0 += Math.ceil((moveGridX.max - X0)/2);
+			return X0;
+		case 'L':
+		case 'DL':
+		case 'UL':
+			printErr('bomb left');
+			moveGridX.max = X0;
+			X0 -= Math.ceil((X0 - moveGridX.min)/2);
+			return X0;
+		default:
+			printErr('bomb same x');
+			return X0;
+		// must be on same line
+	}
+}
 
 function determineYJump(bombDir) {
 	printErr('batman: ' ,X0, Y0)
@@ -43,44 +72,21 @@ function determineYJump(bombDir) {
 		case 'UR':
 		case 'UL':
 			printErr('bomb up');
-			moveGridY.max -= Math.floor(Y0/2);
-			Y0 = moveGridY.min;
-			return moveGridY.min;
+			moveGridY.max = Y0;
+			Y0 -= Math.ceil((Y0 - moveGridY.min)/2);
+			return Y0;
 		case 'D':
 		case 'DL':
 		case 'DR':
 			printErr('bomb down');
-			moveGridY.min += Math.floor(Y0/2);
-			Y0 = moveGridY.max;
-			return moveGridY.max;
+			moveGridY.min = Y0;
+			Y0 += Math.ceil((moveGridY.max - Y0)/2); 
+			return Y0;
 		default:
-			printErr('bomb same');
+			printErr('bomb same, Y0 is ', Y0);
+			return Y0;
 		// must be on same line
 	}
 }
 
-function determineXJump(bombDir) {
-	printErr('batman: ' ,X0, Y0);
-	printErr('bomb is ', bombDir);
-	printErr('gridX min: ' + moveGridX.min + '  max ' + moveGridX.max)
-	switch (bombDir) {
-		case 'R':
-		case 'UR':
-		case 'DR':
-			moveGridX.min += Math.floor((moveGridX.max - moveGridX.min)/2);
-			printErr('bomb right', );
-			X0 = moveGridX.max;
-			return moveGridX.max;
-		case 'L':
-		case 'DL':
-		case 'UL':
-			printErr('bomb left');
-			moveGridX.max -= Math.floor(X0/2);
-			X0 = moveGridX.min;
-			return moveGridX.min;
-		default:
-			printErr('bomb same');
-			return X0;
-		// must be on same line
-	}
-}
+
