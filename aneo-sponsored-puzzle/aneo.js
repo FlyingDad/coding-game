@@ -23,15 +23,38 @@ printErr('# of lights: ', lightCount);
 printErr('light #1: ', lightData[0].distance, lightData[0].duration)
 // Write an action using print()
 // To debug: printErr('Debug messages...');
+//
+//printErr(getTimeToDistanceInSeconds(lightData[0].distance, maxSpeed) + ' seconds')
+//printErr(getDistanceTraveledInMeters(maxSpeed, 14.4) + ' meters')
+let success = false;
+let testSpeed = maxSpeed;
+while(testSpeed > 30){
+	lightData.forEach(light => {
+		printErr('Speed: ', testSpeed);
+		printErr('light state: ', isLightGreenOrRed(light, testSpeed));
+	})
+	testSpeed--;
+}
 
-printErr(getTimeToDistanceInSeconds(lightData[0].distance, maxSpeed) + ' seconds')
-printErr(getDistanceTraveledInMeters(maxSpeed, 14.4) + ' meters')
+
 
 
 print('50');
 
 
 // helper functions
+
+function isLightGreenOrRed(light, speed) {
+	// get time to light at given speed
+	let elapsedTime = getTimeToDistanceInSeconds(light.distance, speed);
+	// divide elapsed time by light timer duration, and figure odd or even
+	let lightState = Math.floor(elapsedTime / light.duration) 
+	let redOrGreen = lightState % 2;
+	printErr('red or green: ', redOrGreen, lightState, elapsedTime);
+	printErr('------------------------')
+	return redOrGreen === 0 ? 'Green' : 'Red';
+}
+
 function getTimeToDistanceInSeconds(dist, rate) {
 	// inputs: km and kph
 	return dist / convertKphToMps(rate);
