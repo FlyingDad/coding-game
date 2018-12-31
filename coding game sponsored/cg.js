@@ -1,9 +1,10 @@
-/**
- * Auto-generated code below aims at helping you parse
- * the standard input according to the problem statement.
- **/
-const BLOCK = String.fromCharCode(9608);
-const OPEN = String.fromCharCode(9617);
+const BLOCK = '#';//String.fromCharCode(9608);
+const OPEN = '_';//String.fromCharCode(9617);
+const UP = 'E';
+const DOWN = 'A';
+const LEFT = 'C';
+const STOP = 'B';
+const RIGHT = 'D';
 
 const firstInitInput = parseInt(readline());
 const secondInitInput = parseInt(readline());
@@ -11,10 +12,11 @@ const thirdInitInput = parseInt(readline());
 
 printErr(firstInitInput, secondInitInput, thirdInitInput);
 
+let lastMove = null;
 // init game grid
 // let cols = '.'.repeat(secondInitInput);
 // let rows = 
-const GAME_GRID = Array(secondInitInput).fill(BLOCK).map(x => Array(firstInitInput).fill(BLOCK))
+const GAME_GRID = Array(secondInitInput).fill(' ').map(x => Array(firstInitInput).fill(' '))
 //
 
 // players object
@@ -33,7 +35,7 @@ function surroundings(u, r, d, l) {
 	GAME_GRID[PLAYERS[4].col-1][PLAYERS[4].row] = l;
 }
 
-// game loop
+// game loop -----------------------------------------------------
 while (true) {
 	const firstInput = readline();
 	const secondInput = readline();
@@ -54,15 +56,50 @@ while (true) {
 	}
 	surroundings(firstInput, secondInput, thirdInput, fourthInput);
 	
-	showPlayerInfo()
+	// for debugging
+	//showPlayerInfo()
 	displayBoard();
+
 	// Write an action using print()
 	// To debug: printErr('Debug messages...');
 	// printErr('1 - 4 ', firstInput, secondInput, thirdInput, fourthInput);
 	// print('A, B, C, D or E');
 
-	print('B')
+	print(makeMove())
 }
+// end game loop ------------------------------------------------------
+
+function makeMove() {
+	printErr(GAME_GRID[PLAYERS[4].col][PLAYERS[4].row-1])
+
+	//check and go left
+	if (GAME_GRID[PLAYERS[4].col][PLAYERS[4].row-1] == OPEN) {
+		lastMove = LEFT;
+		return LEFT;
+	} 
+	// check and go up
+	else if (GAME_GRID[PLAYERS[4].col-1][PLAYERS[4].row] == OPEN) {
+		lastMove = UP;
+		return UP;
+	}
+	// check and go down
+	else if (GAME_GRID[PLAYERS[4].col][PLAYERS[4].row+1] == OPEN) {
+		lastMove = DOWN;
+		return DOWN
+	}
+	// check and go right
+	else if (GAME_GRID[PLAYERS[4].col+1][PLAYERS[4].row] == OPEN) {
+		lastMove = RIGHT;
+		return RIGHT
+	}
+	
+	else {
+		return STOP;
+	}
+
+}
+
+
 
 // DEBUG FUNCTIONS
 
