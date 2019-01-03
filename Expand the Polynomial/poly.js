@@ -3,13 +3,15 @@
  * the standard input according to the problem statement.
  **/
 
-const n = parseInt(readline());
-for (let i = 0; i < n; i++) {
-    const row = readline();
-}
-const calls = readline();
-
+// const poly = readline();
+let poly = '(x-2)(x+2)'
 // Write an action using print()
 // To debug: printErr('Debug messages...');
 
-print('answer');
+// (?<=\()[^)]+(?=\))
+let regex = /(?<=\()[^)]+(?=\))/ig
+var result = poly.match(regex);
+console.log(result);
+
+
+// print('expandedpolynomial');
