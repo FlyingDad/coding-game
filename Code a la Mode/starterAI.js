@@ -189,7 +189,7 @@ while (true) {
 		const customerItem = inputs[0];
 		const customerAward = parseInt(inputs[1]);
 		GAME.customers.push(new Customer(customerItem, customerAward));
-		console.error(GAME.customers)
+		// console.error(GAME.customers)
 	}
 	// GAME.grid.debug();
 
