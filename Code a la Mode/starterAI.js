@@ -16,8 +16,19 @@ const DISH = 'DISH';
 const BLUEBERRIES = 'BLUEBERRIES';
 const ICE_CREAM = 'ICE_CREAM';
 
-let itemDelivered = false;
-let deliveryEnroute = false;
+class ActionSteps {
+	constructor() {
+		this.gettingDish = false;
+		this.gettingBlueBerries = false;
+		this.haveBlueberries = false;
+		this.gettingIceCream = false;
+		this.haveIceCream = false;
+		this.deliveryEnroute = false;
+		this.itemDelivered = false;
+		this.enrouteWindow = false;
+	}
+}
+
 class Entity {
 	constructor(x, y, type) {
 		this.x = x;
@@ -113,6 +124,7 @@ class Game {
 }
 
 let GAME = new Game();
+let PLAYER_STEPS = new ActionSteps();
 
 // ALL CUSTOMERS INPUT: to ignore until Bronze
 const numAllCustomers = parseInt(readline());
@@ -143,10 +155,13 @@ while (true) {
 
 	// PLAYERS INPUT
 	let inputsPlayer = readline().split(' ');
-	console.error(inputsPlayer)
+	// console.error(inputsPlayer)
 	const playerX = parseInt(inputsPlayer[0]);
 	const playerY = parseInt(inputsPlayer[1]);
 	const playerItem = inputsPlayer[2];
+
+	console.error(playerItem);
+
 	GAME.chefs[0] = new Chef(playerX, playerY, playerItem);
 
 	let inputsPartner = readline().split(' ');
@@ -154,7 +169,6 @@ while (true) {
 	const partnerY = parseInt(inputsPartner[1]);
 	const partnerItem = inputsPartner[2];
 	GAME.chefs[1] = new Chef(partnerX, partnerY, partnerItem);
-
 	const numTablesWithItems = parseInt(readline()); // the number of tables in the kitchen that currently hold an item
 	for (let i = 0; i < numTablesWithItems; i++) {
 		let inputs = readline().split(' ');
@@ -178,30 +192,86 @@ while (true) {
 		console.error(GAME.customers)
 	}
 	// GAME.grid.debug();
+
 	// GAME LOGIC
-	// fetch dish, then blueberries, then ice cream, then drop it at first empty table
-	if (playerItem === NONE) {
-		if(!deliveryEnroute){
-			let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
-			console.log(`USE ${dishwasher.x} ${dishwasher.y}; to dish`);
-		} else {
-			// delivery completed
-			deliveryEnroute = false;
-			itemDelivered = true;
-			let emptyTable = GAME.grid.getCellFromType(TABLE).getPos();
-			console.log(`USE ${emptyTable.x} ${emptyTable.y}; to table`);
-		}
-	} else if (playerItem === DISH) {
+    // fetch dish, then blueberries, then ice cream, then drop it at first empty table
+	if(playerItem === NONE && !PLAYER_STEPS.deliveryEnroute){
+		let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
+		console.log(`USE ${dishwasher.x} ${dishwasher.y}; JS starter AI`)
+	}
+	else if(playerItem === DISH){
 		let blueberries = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
-		console.log(`USE ${blueberries.x} ${blueberries.y}; get blueberries`);
-	} else if (itemDelivered){
+		console.log(`USE ${blueberries.x} ${blueberries.y}; JS starter AI`);
+	}
+	else if(playerItem === `${DISH}-${BLUEBERRIES}`){
+		let iceCream = GAME.grid.getCellFromType(ICE_CREAM_CRATE).getPos();
+		console.error('ice cream coords: ', iceCream.x, iceCream.y)
+		console.log(`USE ${iceCream.x} ${iceCream.y}; JS starter AI`);
+	}
+	else if(playerItem === `${DISH}-${BLUEBERRIES}-${ICE_CREAM}`){
 		let window = GAME.grid.getCellFromType(WINDOW).getPos();
 		console.log(`USE ${window.x} ${window.y}; to window`);
+		// let emptyTable = GAME.grid.getCellFromType(TABLE).getPos();
+		// console.log(`USE ${emptyTable.x} ${emptyTable.y}; JS starter AI`);
+		// PLAYER_STEPS.deliveryEnroute = true;
 	}
-		else {
-		// itemDelivered = true;
-		deliveryEnroute = true;
-		let emptyTable = GAME.grid.getCellFromType(TABLE).getPos();
-		console.log(`USE ${emptyTable.x} ${emptyTable.y}; to table`);
-	}
+	// else if(playerItem === NONE && PLAYER_STEPS.deliveryEnroute){
+	// 	PLAYER_STEPS.deliveryEnroute = false;
+	// 	let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
+	// 	console.log(`USE ${dishwasher.x} ${dishwasher.y}; JS starter AI`)
+	// }
+	// GAME LOGIC
+	// // fetch dish, then blueberries, then ice cream, then drop it at first empty table
+	// if (playerItem === NONE) {
+	// 	if(!PLAYER_STEPS.gettingDish){
+	// 		let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
+	// 		console.log(`USE ${dishwasher.x} ${dishwasher.y}; to dish`);
+	// 		// PLAYER_STEPS.gettingDish = true;
+	// 	} 
+		
+	// 	// else if (!PLAYER_STEPS.gettingIceCream){
+	// 	// 	let iceCream = GAME.grid.getCellFromType(ICE_CREAM_CRATE).getPos();
+	// 	// 	console.log(`USE ${iceCream.x} ${iceCream.y}; get iceCream`);
+	// 	// 	PLAYER_STEPS.gettingIceCream = true;
+	// 	// }
+	// 	// else if(PLAYER_STEPS.deliveryEnroute) {
+	// 	// 	let emptyTable = GAME.grid.getCellFromType(TABLE).getPos();
+	// 	// 	console.log(`USE ${emptyTable.x} ${emptyTable.y}; to table`);
+	// 	// }
+
+	// 	// delivery completed, go to window
+	// 	else if (PLAYER_STEPS.deliveryEnroute){
+	// 		PLAYER_STEPS.itemDelivered = true;
+	// 		let window = GAME.grid.getCellFromType(WINDOW).getPos();
+	// 		console.log(`USE ${window.x} ${window.y}; to window`);
+	// 	} else {
+	// 		console.log(`WAIT; error in player item = none`);
+	// 	}
+	// } else if (playerItem = DISH) {
+	// 	//
+	// 	// if (playerItem!= !PLAYER_STEPS.gettingBlueBerries){
+	// 		let blueberries = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
+	// 		console.log(`USE ${blueberries.x} ${blueberries.y}; get blueberries`);
+	// 		PLAYER_STEPS.gettingBlueBerries = true;
+	// 	// }
+	// 	// else if(PLAYER_STEPS.gettingBlueBerries && !PLAYER_STEPS.haveBlueberries){
+	// 	// 	let blueberries = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
+	// 	// 	console.log(`USE ${blueberries.x} ${blueberries.y}; get blueberries`);
+	// 	// }
+	// 	// else if(PLAYER_STEPS.haveBlueberries && PLAYER_STEPS) {
+	// 	// 	if(!PLAYER_STEPS.haveBlueberries) {
+
+	// 	// 	}
+	// 	// }
+	// } else if (playerItem = BLUEBERRIES) {
+	// 	let iceCream = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
+	// 	console.log(`USE ${iceCream.x} ${iceCream.y}; get iceCream`);
+	// 	PLAYER_STEPS.gettingIceCream = true;
+	// }
+	// else if (playerItem === ICE_CREAM){
+	// 	let emptyTable = GAME.grid.getCellFromType(TABLE).getPos();
+	// 	console.log(`USE ${emptyTable.x} ${emptyTable.y}; to table`);
+	// 	// let window = GAME.grid.getCellFromType(WINDOW).getPos();
+	// 	// console.log(`USE ${window.x} ${window.y}; to window`);
+	// }
 }
