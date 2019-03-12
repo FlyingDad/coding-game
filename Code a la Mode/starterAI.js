@@ -9,23 +9,26 @@ const ICE_CREAM_CRATE = 'I';
 const BLUEBERRY_CRATE = 'B';
 const DISH_WASHER = 'D';
 const WINDOW = 'W';
+const STRAWBERRY_CRATE = 'S';
 
 // Item Types
 const NONE = 'NONE';
 const DISH = 'DISH';
 const BLUEBERRIES = 'BLUEBERRIES';
 const ICE_CREAM = 'ICE_CREAM';
+const STRAWBERRIES = 'CHOPPED_STRAWBERRIES';
 
 class ActionSteps {
 	constructor() {
-		this.gettingDish = false;
-		this.gettingBlueBerries = false;
-		this.haveBlueberries = false;
-		this.gettingIceCream = false;
-		this.haveIceCream = false;
+		// this.gettingDish = false;
+		// this.gettingBlueBerries = false;
+		// this.haveBlueberries = false;
+		// this.gettingIceCream = false;
+		// this.haveIceCream = false;
 		this.deliveryEnroute = false;
-		this.itemDelivered = false;
-		this.enrouteWindow = false;
+		// this.itemDelivered = false;
+		// this.enrouteWindow = false;
+		this.preparingOrder = false;
 	}
 }
 
@@ -90,16 +93,16 @@ class Grid {
 	}
 
 	debug() {
-		let row = ''
+		let row = '';
 		let count = 0;
 		this.cells.forEach(cell => {
 			// let pos = cell.getPos();
 			row += cell.type;
 			count++;
-			if(count == WIDTH){
+			if (count == WIDTH) {
 				console.error(row);
 				count = 0;
-				row = ''
+				row = '';
 			}
 			// console.error(`Cell X: ${pos.x} // Cell Y: ${pos.y}`);
 			// console.error(`Cell Type: ${cell.type}`);
@@ -123,8 +126,10 @@ class Game {
 	}
 }
 
+
 let GAME = new Game();
 let PLAYER_STEPS = new ActionSteps();
+let currentCustomerNumber = 0;
 
 // ALL CUSTOMERS INPUT: to ignore until Bronze
 const numAllCustomers = parseInt(readline());
@@ -160,7 +165,7 @@ while (true) {
 	const playerY = parseInt(inputsPlayer[1]);
 	const playerItem = inputsPlayer[2];
 
-	console.error(playerItem);
+	// console.error(playerItem);
 
 	GAME.chefs[0] = new Chef(playerX, playerY, playerItem);
 
@@ -193,85 +198,42 @@ while (true) {
 	}
 	// GAME.grid.debug();
 
-	// GAME LOGIC
-    // fetch dish, then blueberries, then ice cream, then drop it at first empty table
-	if(playerItem === NONE && !PLAYER_STEPS.deliveryEnroute){
-		let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
-		console.log(`USE ${dishwasher.x} ${dishwasher.y}; JS starter AI`)
+	// Get a customer order if we are idle
+	if(GAME.customers.length > 0 && !PLAYER_STEPS.preparingOrder) {
+		// console.error('customers:' , GAME.customers.length)
+
+		// lets get the last customer
+		currentCustomerNumber = GAME.customers[GAME.customers.length - 1];
+		
 	}
-	else if(playerItem === DISH){
+	
+
+	// GAME LOGIC
+
+	// Need to create functions to create custom order
+
+	// fetch dish, then blueberries, then ice cream, then drop it at first empty table
+
+	let itemsToGet = currentCustomerNumber.items;
+	console.error(itemsToGet);
+	for(let i = 0; i < itemsToGet.length; i++){
+		const ITEM_TO_GET = itemsToGet[i];
+		console.error(ITEM_TO_GET);
+	}
+
+	if (playerItem === NONE && !PLAYER_STEPS.deliveryEnroute) {
+		let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
+		console.log(`USE ${dishwasher.x} ${dishwasher.y}; JS starter AI`);
+	} else if (playerItem === DISH) {
 		let blueberries = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
 		console.log(`USE ${blueberries.x} ${blueberries.y}; JS starter AI`);
-	}
-	else if(playerItem === `${DISH}-${BLUEBERRIES}`){
+	} else if (playerItem === `${DISH}-${BLUEBERRIES}`) {
 		let iceCream = GAME.grid.getCellFromType(ICE_CREAM_CRATE).getPos();
-		console.error('ice cream coords: ', iceCream.x, iceCream.y)
+		//console.error('ice cream coords: ', iceCream.x, iceCream.y);
 		console.log(`USE ${iceCream.x} ${iceCream.y}; JS starter AI`);
-	}
-	else if(playerItem === `${DISH}-${BLUEBERRIES}-${ICE_CREAM}`){
+	} else if (playerItem === `${DISH}-${BLUEBERRIES}-${ICE_CREAM}`) {
 		let window = GAME.grid.getCellFromType(WINDOW).getPos();
 		console.log(`USE ${window.x} ${window.y}; to window`);
-		// let emptyTable = GAME.grid.getCellFromType(TABLE).getPos();
-		// console.log(`USE ${emptyTable.x} ${emptyTable.y}; JS starter AI`);
-		// PLAYER_STEPS.deliveryEnroute = true;
 	}
-	// else if(playerItem === NONE && PLAYER_STEPS.deliveryEnroute){
-	// 	PLAYER_STEPS.deliveryEnroute = false;
-	// 	let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
-	// 	console.log(`USE ${dishwasher.x} ${dishwasher.y}; JS starter AI`)
-	// }
-	// GAME LOGIC
-	// // fetch dish, then blueberries, then ice cream, then drop it at first empty table
-	// if (playerItem === NONE) {
-	// 	if(!PLAYER_STEPS.gettingDish){
-	// 		let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
-	// 		console.log(`USE ${dishwasher.x} ${dishwasher.y}; to dish`);
-	// 		// PLAYER_STEPS.gettingDish = true;
-	// 	} 
-		
-	// 	// else if (!PLAYER_STEPS.gettingIceCream){
-	// 	// 	let iceCream = GAME.grid.getCellFromType(ICE_CREAM_CRATE).getPos();
-	// 	// 	console.log(`USE ${iceCream.x} ${iceCream.y}; get iceCream`);
-	// 	// 	PLAYER_STEPS.gettingIceCream = true;
-	// 	// }
-	// 	// else if(PLAYER_STEPS.deliveryEnroute) {
-	// 	// 	let emptyTable = GAME.grid.getCellFromType(TABLE).getPos();
-	// 	// 	console.log(`USE ${emptyTable.x} ${emptyTable.y}; to table`);
-	// 	// }
 
-	// 	// delivery completed, go to window
-	// 	else if (PLAYER_STEPS.deliveryEnroute){
-	// 		PLAYER_STEPS.itemDelivered = true;
-	// 		let window = GAME.grid.getCellFromType(WINDOW).getPos();
-	// 		console.log(`USE ${window.x} ${window.y}; to window`);
-	// 	} else {
-	// 		console.log(`WAIT; error in player item = none`);
-	// 	}
-	// } else if (playerItem = DISH) {
-	// 	//
-	// 	// if (playerItem!= !PLAYER_STEPS.gettingBlueBerries){
-	// 		let blueberries = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
-	// 		console.log(`USE ${blueberries.x} ${blueberries.y}; get blueberries`);
-	// 		PLAYER_STEPS.gettingBlueBerries = true;
-	// 	// }
-	// 	// else if(PLAYER_STEPS.gettingBlueBerries && !PLAYER_STEPS.haveBlueberries){
-	// 	// 	let blueberries = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
-	// 	// 	console.log(`USE ${blueberries.x} ${blueberries.y}; get blueberries`);
-	// 	// }
-	// 	// else if(PLAYER_STEPS.haveBlueberries && PLAYER_STEPS) {
-	// 	// 	if(!PLAYER_STEPS.haveBlueberries) {
-
-	// 	// 	}
-	// 	// }
-	// } else if (playerItem = BLUEBERRIES) {
-	// 	let iceCream = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
-	// 	console.log(`USE ${iceCream.x} ${iceCream.y}; get iceCream`);
-	// 	PLAYER_STEPS.gettingIceCream = true;
-	// }
-	// else if (playerItem === ICE_CREAM){
-	// 	let emptyTable = GAME.grid.getCellFromType(TABLE).getPos();
-	// 	console.log(`USE ${emptyTable.x} ${emptyTable.y}; to table`);
-	// 	// let window = GAME.grid.getCellFromType(WINDOW).getPos();
-	// 	// console.log(`USE ${window.x} ${window.y}; to window`);
-	// }
 }
