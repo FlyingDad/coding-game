@@ -20,6 +20,12 @@ const STRAWBERRIES = 'CHOPPED_STRAWBERRIES';
 
 class ActionSteps {
 	constructor() {
+		this.currentCustomer = {};
+		this.itemsToGet = [];
+		this.itemToGet = '';
+		this.orderItem = '';
+		// this.orderCount = 0;
+		this.orderProgressCount = 0; // progress on current order
 		// this.gettingDish = false;
 		// this.gettingBlueBerries = false;
 		// this.haveBlueberries = false;
@@ -29,7 +35,29 @@ class ActionSteps {
 		// this.itemDelivered = false;
 		// this.enrouteWindow = false;
 		this.preparingOrder = false;
+
+		this.getNextOrderItem = this.getNextOrderItem.bind(this);
 	}
+
+	getNextOrderItem() {
+		console.error('ITEMS TO GET: ', this.itemsToGet)
+		this.orderItem = this.itemsToGet[this.orderProgressCount]
+		console.error('get next order from ActioSteps', this.orderItem)
+		switch(this.orderItem) {
+			case DISH:
+				// this.itemToGet = DISH_WASHER;
+				return DISH_WASHER;
+				break;
+			case ICE_CREAM:
+				// this.itemToGet = BLUEBERRY_CRATE;
+				break;
+			default:
+				break;
+		}
+		// console.error(this.itemToGet);
+		return;
+	}
+
 }
 
 class Entity {
@@ -126,7 +154,6 @@ class Game {
 	}
 }
 
-
 let GAME = new Game();
 let PLAYER_STEPS = new ActionSteps();
 let currentCustomerNumber = 0;
@@ -199,14 +226,12 @@ while (true) {
 	// GAME.grid.debug();
 
 	// Get a customer order if we are idle
-	if(GAME.customers.length > 0 && !PLAYER_STEPS.preparingOrder) {
+	if (GAME.customers.length > 0 && !PLAYER_STEPS.preparingOrder) {
 		// console.error('customers:' , GAME.customers.length)
 
 		// lets get the last customer
-		currentCustomerNumber = GAME.customers[GAME.customers.length - 1];
-		
+		PLAYER_STEPS.currentCustomer = GAME.customers[GAME.customers.length - 1];
 	}
-	
 
 	// GAME LOGIC
 
@@ -214,26 +239,69 @@ while (true) {
 
 	// fetch dish, then blueberries, then ice cream, then drop it at first empty table
 
-	let itemsToGet = currentCustomerNumber.items;
-	console.error(itemsToGet);
-	for(let i = 0; i < itemsToGet.length; i++){
-		const ITEM_TO_GET = itemsToGet[i];
-		console.error(ITEM_TO_GET);
+	PLAYER_STEPS.itemsToGet = PLAYER_STEPS.currentCustomer.items;
+	console.error(PLAYER_STEPS.itemsToGet);
+	PLAYER_STEPS.orderProgressCount = PLAYER_STEPS.itemsToGet.length;
+	console.error('Progress count: ',PLAYER_STEPS.orderProgressCount);
+	if(PLAYER_STEPS.orderProgressCount > 0) {
+		let test = PLAYER_STEPS.getNextOrderItem();
+		console.error('orderitem: ', test);
 	}
 
-	if (playerItem === NONE && !PLAYER_STEPS.deliveryEnroute) {
-		let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
-		console.log(`USE ${dishwasher.x} ${dishwasher.y}; JS starter AI`);
-	} else if (playerItem === DISH) {
-		let blueberries = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
-		console.log(`USE ${blueberries.x} ${blueberries.y}; JS starter AI`);
-	} else if (playerItem === `${DISH}-${BLUEBERRIES}`) {
-		let iceCream = GAME.grid.getCellFromType(ICE_CREAM_CRATE).getPos();
-		//console.error('ice cream coords: ', iceCream.x, iceCream.y);
-		console.log(`USE ${iceCream.x} ${iceCream.y}; JS starter AI`);
-	} else if (playerItem === `${DISH}-${BLUEBERRIES}-${ICE_CREAM}`) {
-		let window = GAME.grid.getCellFromType(WINDOW).getPos();
-		console.log(`USE ${window.x} ${window.y}; to window`);
-	}
+	console.log('WAIT');
 
+	// switch (orderItem) {
+	// 	case DISH:
+	// 		itemToGet = DISH_WASHER;
+	// 		break;
+	// 	default:
+	// 		break;
+	// }
+	// console.error('itemtoget: ', itemToGet);
+	// console.error(playerItem, playerItem.includes(orderItem));
+	// if (playerItem.includes(orderItem)) {
+	// 	console.error('got item');
+	// 	let orderItem = itemsToGet[count];
+	// 	console.error('orderitem: ', orderItem);
+	// 	let itemToGet;
+	// 	switch (orderItem) {
+	// 		case DISH:
+	// 			itemToGet = DISH_WASHER;
+	// 			break;
+	// 		case ICE_CREAM:
+	// 			itemToGet = BLUEBERRY_CRATE;
+	// 			break;
+	// 		default:
+	// 			break;
+	// 	}
+	// 	let coords = GAME.grid.getCellFromType(itemToGet).getPos();
+	// 	console.error('coords: ', coords);
+	// 	console.log(`USE ${coords.x} ${coords.y}`);
+	// 	itemCount--;
+	// } else {
+	// 	let coords = GAME.grid.getCellFromType(itemToGet).getPos();
+	// 	console.error('coords: ', coords);
+	// 	console.log(`USE ${coords.x} ${coords.y}`);
+	// }
+
+	// }
+	// for(let i = 0; i < itemsToGet.length; i++){
+	// 	const ITEM_TO_GET = itemsToGet[i];
+	// 	console.error(ITEM_TO_GET);
+	// }
+
+	// if (playerItem === NONE && !PLAYER_STEPS.deliveryEnroute) {
+	// 	let dishwasher = GAME.grid.getCellFromType(DISH_WASHER).getPos();
+	// 	console.log(`USE ${dishwasher.x} ${dishwasher.y}; JS starter AI`);
+	// } else if (playerItem === DISH) {
+	// 	let blueberries = GAME.grid.getCellFromType(BLUEBERRY_CRATE).getPos();
+	// 	console.log(`USE ${blueberries.x} ${blueberries.y}; JS starter AI`);
+	// } else if (playerItem === `${DISH}-${BLUEBERRIES}`) {
+	// 	let iceCream = GAME.grid.getCellFromType(ICE_CREAM_CRATE).getPos();
+	// 	//console.error('ice cream coords: ', iceCream.x, iceCream.y);
+	// 	console.log(`USE ${iceCream.x} ${iceCream.y}; JS starter AI`);
+	// } else if (playerItem === `${DISH}-${BLUEBERRIES}-${ICE_CREAM}`) {
+	// 	let window = GAME.grid.getCellFromType(WINDOW).getPos();
+	// 	console.log(`USE ${window.x} ${window.y}; to window`);
+	// }
 }
