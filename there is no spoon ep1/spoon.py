@@ -2,36 +2,46 @@ import sys
 import math
 
 grid = []
-nodeScan = [] #each cells scan result
+nodeScan = ['0', '0'] #each cells scan result
+
+def noNodeFound():
+    nodeScan.append('-1')
+    nodeScan.append('-1')
 
 def processNode(row, col):
-    # print(f'coords {row} {y}', file=sys.stderr)
-    node = grid[row][col]
+
+    #process row
+    r = grid[row]
+    remainingRow = r[col + 1:]       
+    try: 
+        index = remainingRow.index('0')
+        nodeScan.append(str(index + col + 1))
+        nodeScan.append(str(row))
+    except ValueError:
+        noNodeFound()
+
+    print(f"Nodescan = {nodeScan}", file=sys.stderr)
+
+
+    #process col
+
+    c = []
+    for node in range(1,height):
+        c.append(grid[node][col])
+    
+    print(f"C = {c}", file=sys.stderr)
+  
     try:
-        rightNode = int(grid[row][col + 1])
-    except (IndexError):
-        rightNode = -1
-    try:
-        bottomNode= int(grid[row + 1][col])
-    except(IndexError):
-        bottomNode= -1
-    print(f"node {row},{col}: {node} - right: {rightNode} - bottom: {bottomNode}", file=sys.stderr)
-
-    nodeScan.append(row)
-    nodeScan.append(col)
-    if(rightNode >= 0):
-        nodeScan.append(rightNode[0])
-        nodeScan.append(rightNode[1])
-    else:
-        nodeScan.append(-1) * 2
-    if(bottomNode >= 0):
-        nodeScan.append(bottomNode[0])
-        nodeScan.append(bottomNode[1])
-    else:
-        nodeScan.append(-1) * 2
+        index = c.index('0')
+        print(f"0 found at {index}", file=sys.stderr)
+        nodeScan.append('0')
+        nodeScan.append(str(index + 1))
+    except ValueError:
+        print(f"0 not found", file=sys.stderr)
+        noNodeFound()
 
 
-    print(nodeScan)
+    print(f"Nodescan = {nodeScan}", file=sys.stderr)
 
 # Don't let the machines win. You are humanity's last hope...
 
@@ -47,16 +57,17 @@ for i in range(height):
 print("width: " + str(width) + "  height: " + str(height), file=sys.stderr)
 print(grid, file=sys.stderr)
 
-for row in range(width):
-    for col in range(len(grid[row])):
+# for row in range(width):
+#     for col in range(len(grid[row])):
         # print("grid coord: " + str(row) + ' ' + str(col),  file=sys.stderr)
         # c = (row, col)
-        processNode(row, col)
 
+processNode(0, 0)
 
+print(' '.join(nodeScan))
 
 
 # Three coordinates: a node, its right neighbor, its bottom neighbor
-print("0 0 1 0 0 1")
-print("0 1 -1 -1 -1 -1")
-print("1 0 -1 -1 -1 -1")
+# print("0 0 1 0 0 1")
+# print("0 1 -1 -1 -1 -1")
+# print("1 0 -1 -1 -1 -1")
