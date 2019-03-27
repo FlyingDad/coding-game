@@ -12,7 +12,6 @@ class Player:
         self.x = 0
         self.y = 0
         self.item = NONE
-        self.serving = False
 
 class Tile:
     def __init__(self, x, y, name):
@@ -26,12 +25,6 @@ class Tile:
 
     def __repr__(self):
         return "Tile: " + str(self.x) + ", " + str(self.y)
-
-class Customer:
-    def __init__(self, item, points):
-        self.item = item
-        self.points = points
-
 
 # Cells
 BLUEBERRIES_CRATE = "B"
@@ -51,7 +44,6 @@ class Game:
     def __init__(self):
         self.player = Player()
         self.partner = Player()
-        self.customers = []
         self.tiles = []
 
     def addTile(self, x, y, tileChar):
@@ -110,7 +102,6 @@ for i in range(num_all_customers):
     # customer_award: the number of points awarded for delivering the food
     customer_item, customer_award = input().split()
     customer_award = int(customer_award)
-    print(f"{customer_item} - {customer_award}", file=sys.stderr)
 
 # KITCHEN INPUT
 for y in range(7):
@@ -148,26 +139,10 @@ while True:
     # oven_contents: ignore until bronze league
     oven_contents, oven_timer = input().split()
     oven_timer = int(oven_timer)
-
     num_customers = int(input())  # the number of customers currently waiting for food
     for i in range(num_customers):
         customer_item, customer_award = input().split()
         customer_award = int(customer_award)
-        customer = Customer(customer_item, customer_award)
-        game.customers.append(customer)
-
-    #debug
-    # for c in game.customers:
-    #     print(f"{c.item} {c.points}", file=sys.stderr)
-
-    # get next customer
-    #lets get the most recent cusomer (last in customer list)
-    if not game.player.serving:
-        game.player.item = game.customers[len(game.customers) - 1].item
-        game.player.serving = True
-
-    #debug 
-    print(f"Preparing {game.player.item}", file=sys.stderr)
 
     # GAME LOGIC
     #Gather plate & Icecream
@@ -175,11 +150,6 @@ while True:
         game.use(game.getTileByName(DISHWASHER))
     elif ICE_CREAM not in game.player.item:
         game.use(game.getTileByName(ICE_CREAM_CRATE))
-    elif BLUEBERRIES not in game.player.item:
-        game.use(game.getTileByName(BLUEBERRIES_CRATE))
     else:
-        game.use(game.getTileByName(WINDOW))
-    
-    print(f"Preparing {game.player.item}", file=sys.stderr)
-
+        game.use(game.getTileByName(EMPTY_TABLE))
 #End game code
