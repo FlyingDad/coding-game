@@ -12,7 +12,13 @@ class Player:
         self.x = 0
         self.y = 0
         self.item = NONE
+        self.order = ''
+        self.item_num = 0 #the index of the order we are getting
+        self.order_items = []
         self.serving = False
+
+    def parse_order(self):
+        self.order_items = self.order.split('-')
 
 class Tile:
     def __init__(self, x, y, name):
@@ -36,6 +42,8 @@ class Customer:
 # Cells
 BLUEBERRIES_CRATE = "B"
 ICE_CREAM_CRATE = "I"
+CHOPPED_STRAWBERRIES_CRATE = "S"
+CHOPPING_BOARD = "C"
 WINDOW = "W"
 EMPTY_TABLE = "#"
 DISHWASHER = "D"
@@ -46,6 +54,22 @@ NONE = "NONE"
 DISH = "DISH"
 ICE_CREAM = "ICE_CREAM"
 BLUEBERRIES = "BLUEBERRIES"
+CHOPPED_STRAWBERRIES = "CHOPPED_STRAWBERRIES"
+
+def enum_item_to_cell(item):
+    if item == DISH:
+        return DISHWASHER
+    elif item == ICE_CREAM:
+        return ICE_CREAM_CRATE
+    elif item == BLUEBERRIES:
+        return BLUEBERRIES_CRATE
+    elif item == CHOPPED_STRAWBERRIES:
+        return CHOPPING_BOARD
+    elif item == EMPTY_TABLE:
+        return EMPTY_TABLE
+    else:
+        print("Error enuming item to cell", file=sys.stderr) 
+        pass
 
 class Game:
     def __init__(self):
@@ -94,10 +118,13 @@ class Game:
         self.partner.item = item
 
     def use(self, tile):
-        print("USE", tile.x, tile.y,"; Python Starter AI")
+        c = self.getTileByCoords(tile.x, tile.y)
+        print("USE", tile.x, tile.y,f"; {c.name}")
 
     def move(self, tile):
         print("MOVE", tile.x, tile.y)
+
+
 #End Util code
 
 #Begin game code
@@ -110,7 +137,7 @@ for i in range(num_all_customers):
     # customer_award: the number of points awarded for delivering the food
     customer_item, customer_award = input().split()
     customer_award = int(customer_award)
-    print(f"{customer_item} - {customer_award}", file=sys.stderr)
+    # print(f"{customer_item} - {customer_award}", file=sys.stderr)
 
 # KITCHEN INPUT
 for y in range(7):
@@ -120,6 +147,7 @@ for y in range(7):
 
 # game loop
 while True:
+
     turns_remaining = int(input())
 
     # PLAYERS INPUT
@@ -128,6 +156,9 @@ while True:
     player_x = int(player_x)
     player_y = int(player_y)
     game.updatePlayer(player_x, player_y, player_item)
+
+    #debug
+    print(f"Player has {player_item}", file=sys.stderr)
 
     #Gather and update partner information
     partner_x, partner_y, partner_item = input().split()
@@ -143,6 +174,7 @@ while True:
         table_x, table_y, item = input().split()
         table_x = int(table_x)
         table_y = int(table_y)
+        print("table item " + item, file=sys.stderr)
         game.getTileByCoords(table_x, table_y).item = item
 
     # oven_contents: ignore until bronze league
@@ -163,23 +195,44 @@ while True:
     # get next customer
     #lets get the most recent cusomer (last in customer list)
     if not game.player.serving:
-        game.player.item = game.customers[len(game.customers) - 1].item
+        print("Getting new order", file=sys.stderr)
+        game.player.order = game.customers[len(game.customers) - 1].item
         game.player.serving = True
+        game.player.parse_order()
 
     #debug 
-    print(f"Preparing {game.player.item}", file=sys.stderr)
+    print(f"Preparing {game.player.order}", file=sys.stderr)
+    # print(game.player.order_items, file=sys.stderr)
+
 
     # GAME LOGIC
-    #Gather plate & Icecream
-    if DISH not in game.player.item:
-        game.use(game.getTileByName(DISHWASHER))
-    elif ICE_CREAM not in game.player.item:
-        game.use(game.getTileByName(ICE_CREAM_CRATE))
-    elif BLUEBERRIES not in game.player.item:
-        game.use(game.getTileByName(BLUEBERRIES_CRATE))
+
+    #check if we have item, if we do, incrment item_num
+    if game.player.order_items[game.player.item_num] in game.player.item:
+        game.player.item_num += 1
+
+    #Gather plate 
+    # Note: if getting strawberries, we need to set the plate down, get them, chop them, get plate get strawberries, window?
+
+    #insert put plate down, get strawberries, chop strawberries, get new dish ...
+    if game.player.order_items[game.player.item_num] == CHOPPED_STRAWBERRIES:
+        game.player.order_items.insert(game.player.item_num, EMPTY_TABLE)
+        game.player.order_items.insert(game.player.item_num + 1, CHOPPING_BOARD)
+        
+
+    if game.player.order_items[game.player.item_num] not in game.player.item:
+        game.use(game.getTileByName(enum_item_to_cell(game.player.order_items[game.player.item_num])))
+
+
+    # if DISH not in game.player.item:
+    #     game.use(game.getTileByName(DISHWASHER))
+    # elif ICE_CREAM not in game.player.item:
+    #     game.use(game.getTileByName(ICE_CREAM_CRATE))
+    # elif BLUEBERRIES not in game.player.item:
+    #     game.use(game.getTileByName(BLUEBERRIES_CRATE))
     else:
         game.use(game.getTileByName(WINDOW))
     
-    print(f"Preparing {game.player.item}", file=sys.stderr)
+    
 
 #End game code
